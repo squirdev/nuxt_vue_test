@@ -6,7 +6,7 @@
         <ETextField v-model="currentUser.name" type="string" :label="$t('account')" />
         <ETextField v-model="currentUser.age" type="number" :label="$t('age')" />
         <div class="button-group">
-          <EBtn :text="$t('Modify')" color="success" @click="confirmModifyUser" />
+          <EBtn :text="$t('modify')" color="success" @click="confirmModifyUser" />
           <EBtn :text="$t('new')" color="warn" @click="confirmAddUser" />
         </div>
       </div>
@@ -31,8 +31,8 @@
               <td>{{ user.name }}</td>
               <td>{{ user.age }}</td>
               <td class="button">
-                <EBtn :text="$t('Modify')" color="success" @click="editUser(user)" />
-                <EBtn :text="$t('Delete')" color="error" @click="confirmDeleteUser(user.id)" />
+                <EBtn :text="$t('modify')" color="success" @click="editUser(user)" />
+                <EBtn :text="$t('delete')" color="error" @click="confirmDeleteUser(user.id)" />
               </td>
             </tr>
           </tbody>
@@ -41,8 +41,8 @@
 
       <div>
         <label for="language-select">{{ $t('selectLanguage') }}</label>
-        <select id="language-select" v-model="selectedLanguage" @change="changeLanguage">
-          <option value="zh">繁體中文</option>
+        <select id="language-select" v-model="selectedLanguage" @change="changeLanguage($event)">
+          <option value="cn">繁體中文</option>
           <option value="en">English</option>
         </select>
       </div>
@@ -64,7 +64,7 @@ import './index.scss'
 
 import { useUserStore } from '@/store/userStore'
 const runtimeConfig = useRuntimeConfig()
-const { API_BASE_URL } = runtimeConfig.public // Define a constant for the base URL
+const { API_BASE_URL } = runtimeConfig.public
 
 import axios from 'axios'
 import EBtn from '@/components/EBtn.vue'
@@ -72,9 +72,9 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const userStore = useUserStore()
-const { locale, t } = useI18n() // Access the i18n locale
+const { locale, t, setLocale, locales } = useI18n() // Access the i18n locale
 const currentUser = ref({ id: null, name: '', age: null }) // Reactive object for current user
-const selectedLanguage = ref(locale.value) // Reactive variable for selected language
+let selectedLanguage = locale.value // Reactive variable for selected language
 const loading = ref(false) // Loading state
 
 const confirmDialog = ref(null)
@@ -82,23 +82,18 @@ const confirmationMessage = ref('')
 let pendingAction = null
 
 const fetchUsers = async () => {
-  loading.value = true // Set loading to true before fetching
+  loading.value = true
   try {
     const response = await axios.get(`${API_BASE_URL}/api/user`)
     userStore.setUsers(response.data.data)
   } finally {
-    loading.value = false // Set loading to false after fetching
+    loading.value = false
   }
 }
 
 // Fetch users when the component is mounted
 onMounted(() => {
   fetchUsers()
-})
-
-// Watch for changes in selectedLanguage and update locale
-watch(selectedLanguage, (newLang) => {
-  locale.value = newLang
 })
 
 const editUser = (user) => {
@@ -133,9 +128,10 @@ const deleteUser = async (userId: number) => {
   fetchUsers()
 }
 
-const changeLanguage = (e) => {
-  e.preventDefault();
-  locale.value = selectedLanguage.value // Update the locale based on the selected language
+const changeLanguage = (val) => {
+  // locale.value = val.target.value // Update the locale based on the selected language
+  selectedLanguage = val.target.value
+  setLocale(val.target.value)
 }
 
 const confirmModifyUser = () => {

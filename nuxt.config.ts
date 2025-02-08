@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: '2025-02-08',
   devtools: { enabled: true },
 
   modules: ['@nuxtjs/i18n', '@pinia/nuxt', '@nuxt/image', '@unocss/nuxt', '@nuxtjs/google-fonts'],
@@ -27,31 +27,7 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    locales: [
-      {
-        code: 'zh',
-        file: 'zh.json',
-        language: 'zh',
-        name: '繁體中文',
-      },
-      {
-        code: 'en',
-        file: 'en.json',
-        language: 'en',
-        name: 'English',
-      },
-    ],
-    lazy: true,
-    langDir: 'language/',
-    defaultLocale: 'zh',
-    strategy: 'prefix_except_default',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root',
-      alwaysRedirect: true,
-      fallbackLocale: 'zh',
-    },
+    vueI18n: './i18n.config.ts',
   },
 
   unocss: {
